@@ -221,11 +221,26 @@ class UnETF:
     nFraisSortie = ''
     sGroupeCat_Specific_Dynamic = ''
 
+    # perf
+    nRet1a = ''
+    nRet3a = ''
+    nRet5a = ''
+    # volatility
+    nVolat1a = ''
+    nVolat3a = ''
+    nVolat5a = ''
+
+    # DETAILS
     typeInvestisseur = ''
     classificationAMF = ''
     indiceDeReference = ''
     categorieQ = ''
     indiceDeRefQ = ''
+
+    capiDitri = ''
+    partHedgee = ''
+    eligiblePEA = ''
+
 
     def __init__(self, etf):
         self.sNom = str(etf['sNom'])
@@ -238,6 +253,14 @@ class UnETF:
         self.nFraisSortie = str(etf['nFraisSortie'])
 
         self.sGroupeCat_Specific_Dynamic = str(etf['sGroupeCat_Specific_Dynamic'])
+
+        self.nRet1a = str(etf['nRet1a'])
+        self.nRet3a = str(etf['nRet3a'])
+        self.nRet5a = str(etf['nRet5a'])
+
+        self.nVolat1a = str(etf['nVolat1a'])
+        self.nVolat3a = str(etf['nVolat3a'])
+        self.nVolat5a = str(etf['nVolat5a'])
 
 
     def toString(self, sep):
@@ -255,8 +278,14 @@ class UnETF:
                + sep + self.classificationAMF \
                + sep + self.indiceDeReference \
                + sep + self.categorieQ \
-               + sep + self.indiceDeRefQ
-
+               + sep + self.indiceDeRefQ \
+               + sep + self.nRet1a \
+               + sep + self.nRet3a \
+               + sep + self.nRet5a \
+               + sep + self.nVolat1a \
+               + sep + self.nVolat3a \
+               + sep + self.nVolat5a \
+               + ""
 
 def cleanValue(value):
     value = str(value)
@@ -290,7 +319,7 @@ def getDetail(sURL, unETF,proxies):
         print("caracGenerale[" + str(index) + "] = " + caracGenerale.text)
         index = index + 1
 
-    exit(-1)
+    # exit(-1)
 
 
 # partie principale
