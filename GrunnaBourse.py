@@ -17,7 +17,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 GrunnaBourse = 'v0'
 
 proxies = {}
-sep = ","
+sep = ";"
 
 def callParameter(customParameters):
     tabParameter = {
@@ -240,33 +240,65 @@ class UnETF:
     capiDitri = ''
     partHedgee = ''
     eligiblePEA = ''
+    fraisSouscription = ''
+    fraisRachat = ''
+    fraisGestion = ''
+    fraisCourant = ''
 
+    header = [
+         'sCodeISIN' \
+        ,'nActifEur' \
+        ,'sNom' \
+        ,'nVL' \
+        ,'nFraisGestion' \
+        ,'nFraisEntree' \
+        ,'nFraisSortie' \
+        ,'sGroupeCat_Specific_Dynamic' \
+        ,'typeInvestisseur' \
+        ,'classificationAMF' \
+        ,'indiceDeReference' \
+        ,'categorieQ' \
+        ,'indiceDeRefQ' \
+        ,'nRet1a' \
+        ,'nRet3a' \
+        ,'nRet5a' \
+        ,'nVolat1a' \
+        ,'nVolat3a' \
+        ,'nVolat5a' \
+        ,'capiDitri' \
+        ,'partHedgee' \
+        ,'eligiblePEA' \
+        ,'fraisSouscription' \
+        ,'fraisRachat' \
+        ,'fraisGestion' \
+        ,'fraisCourant'
+        ]
 
     def __init__(self, etf):
-        self.sNom = str(etf['sNom'])
-        self.nActifEur = str(etf['nActifEur'])
-        self.sCodeISIN = str(etf['sCodeISIN'])
-        self.nVL = str(etf['nVL'])
+        self.sNom = cleanValue(str(etf['sNom']))
+        self.nActifEur = cleanValue(str(etf['nActifEur']))
+        self.sCodeISIN = cleanValue(str(etf['sCodeISIN']))
+        self.nVL = cleanValue(str(etf['nVL']))
 
-        self.nFraisGestion= str(etf['nFraisGestion'])
-        self.nFraisEntree = str(etf['nFraisEntree'])
-        self.nFraisSortie = str(etf['nFraisSortie'])
+        self.nFraisGestion= cleanValue(str(etf['nFraisGestion']))
+        self.nFraisEntree = cleanValue(str(etf['nFraisEntree']))
+        self.nFraisSortie = cleanValue(str(etf['nFraisSortie']))
 
-        self.sGroupeCat_Specific_Dynamic = str(etf['sGroupeCat_Specific_Dynamic'])
+        self.sGroupeCat_Specific_Dynamic = cleanValue(str(etf['sGroupeCat_Specific_Dynamic']))
 
-        self.nRet1a = str(etf['nRet1a'])
-        self.nRet3a = str(etf['nRet3a'])
-        self.nRet5a = str(etf['nRet5a'])
+        self.nRet1a = cleanValue(str(etf['nRet1a']))
+        self.nRet3a = cleanValue(str(etf['nRet3a']))
+        self.nRet5a = cleanValue(str(etf['nRet5a']))
 
-        self.nVolat1a = str(etf['nVolat1a'])
-        self.nVolat3a = str(etf['nVolat3a'])
-        self.nVolat5a = str(etf['nVolat5a'])
+        self.nVolat1a = cleanValue(str(etf['nVolat1a']))
+        self.nVolat3a = cleanValue(str(etf['nVolat3a']))
+        self.nVolat5a = cleanValue(str(etf['nVolat5a']))
 
 
     def toString(self, sep):
         """Format du dump fichier"""
         return "" \
-                    + self.sCodeISIN \
+               + self.sCodeISIN \
                + sep + self.nActifEur \
                + sep + self.sNom \
                + sep + self.nVL \
@@ -285,11 +317,48 @@ class UnETF:
                + sep + self.nVolat1a \
                + sep + self.nVolat3a \
                + sep + self.nVolat5a \
+               + sep + self.capiDitri \
+               + sep + self.partHedgee \
+               + sep + self.eligiblePEA \
+               + sep + self.fraisSouscription \
+               + sep + self.fraisRachat \
+               + sep + self.fraisGestion \
+               + sep + self.fraisCourant \
                + ""
+
+    def __iter__(self):
+        return iter([ \
+             self.sCodeISIN \
+            , self.nActifEur \
+            , self.sNom \
+            , self.nVL \
+            , self.nFraisGestion \
+            , self.nFraisEntree \
+            , self.nFraisSortie \
+            , self.sGroupeCat_Specific_Dynamic \
+            , self.typeInvestisseur \
+            , self.classificationAMF \
+            , self.indiceDeReference \
+            , self.categorieQ \
+            , self.indiceDeRefQ \
+            , self.nRet1a \
+            , self.nRet3a \
+            , self.nRet5a \
+            , self.nVolat1a \
+            , self.nVolat3a \
+            , self.nVolat5a \
+            , self.capiDitri \
+            , self.partHedgee \
+            , self.eligiblePEA \
+            , self.fraisSouscription \
+            , self.fraisRachat \
+            , self.fraisGestion \
+            , self.fraisCourant \
+        ])
 
 def cleanValue(value):
     value = str(value)
-    return value.replace("\n", "").strip()
+    return value.replace("\n", "").replace("\t", "").replace(",", ";").strip()
 
 def getDetail(sURL, unETF,proxies):
 
@@ -314,10 +383,18 @@ def getDetail(sURL, unETF,proxies):
     dataRefs = dataRef.find_all('div', recursive=False)
     subDataRefs = dataRefs[4].find_all('div',class_="col-md-4")
     caracGenerales = subDataRefs[2].find_all('td')
-    index = 0
-    for caracGenerale in caracGenerales:
-        print("caracGenerale[" + str(index) + "] = " + caracGenerale.text)
-        index = index + 1
+    # index = 0
+    # for caracGenerale in caracGenerales:
+    #     print("caracGenerale[" + str(index) + "] = " + caracGenerale.text)
+    #     index = index + 1
+
+    unETF.capiDitri = cleanValue(caracGenerales[3].text)
+    unETF.partHedgee = cleanValue(caracGenerales[4].text)
+    unETF.eligiblePEA = cleanValue(caracGenerales[8].text)
+    unETF.fraisSouscription = cleanValue(caracGenerales[18].text)
+    unETF.fraisRachat = cleanValue(caracGenerales[20].text)
+    unETF.fraisGestion = cleanValue(caracGenerales[22].text)
+    unETF.fraisCourant = cleanValue(caracGenerales[26].text)
 
     # exit(-1)
 
@@ -325,7 +402,8 @@ def getDetail(sURL, unETF,proxies):
 # partie principale
 if __name__ == "__main__":
 
-    customParameters = { 'length' : '3' }
+    # customParameters = { 'length' : '3' }
+    customParameters = { }
     callParameters = callParameter(customParameters)
 
     callString = ""
@@ -366,14 +444,20 @@ if __name__ == "__main__":
 
     liste_des_etf = []
     countETF = 0
+    maxETF = len(retourEnJson['data'])
     for etf in retourEnJson['data']:
         unETF = UnETF(etf)
         countETF = countETF + 1
-
-        # get detailed
         getDetail(etf['sURL'], unETF, proxies)
+        liste_des_etf.append(unETF)
+        print("\r[", str(countETF) ,"/", maxETF , "]", end="",flush=True)
 
-        print(unETF.toString(sep))
-
+    print(" * ok")
     print("Fin extraction : " + str(countETF) + " ETF")
+
+    with open('etf.csv', 'w', newline='') as f:
+        writer = csv.writer(f, quoting=csv.QUOTE_ALL)
+        writer.writerow(UnETF.header)
+        for etf in liste_des_etf:
+            writer.writerow(etf)
 
